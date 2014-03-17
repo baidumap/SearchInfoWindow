@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<script src="http://api.map.baidu.com/api?v=1.5"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
+<link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css" />
+
+<title>Creating and Using an SearchInfoWindow</title>
+</head>
+<body>
+<div style="overflow:hidden;zoom:1;">	
+    <div id="map" style="width:700px; height: 400px;float:left;"></div>
+    <div id="panel" style="width:400px;height:400px; overflow:auto;float:left;"></div>
+</div>
+
+<button id="close">close</button>
+<button id="open">open</button>
+<button id="show">show</button>
+<button id="hide">hide</button>
+<button id="enableAutoPan">enableAutoPan</button>
+<button id="disableAutoPan">disableAutoPan</button>
+<br/>
+<button id="getPosition">getPosition</button>
+position: lng:<input type="text" id="lng" value="116.319852"/>
+lat:<input type="text" id="lat" value="40.057031"/>
+<button id="setPosition">setPosition</button>
+<button id="getOffset">getOffset</button>
+<br/>
+content: <input type="text" id="content" value="新的内容"/>
+<button id="setContent">setContent</button>
+<button id="getContent">getContent</button>
+title: <input type="text" id="title" value="新的标题"/>
+<button id="setTitle">setTitle</button>
+<button id="getTitle">getTitle</button>
+<br/>
+打开新的信息框
+<input type="button" value="信息框1" onclick="openInfoWindow1()"/>
+<input type="button" value="信息框2" onclick="openInfoWindow2()"/>
+<input type="button" value="信息框3" onclick="openInfoWindow3()"/>
+ <script type="text/javascript">
+var map = new BMap.Map('map');
+var poi = new BMap.Point(116.307852,40.057031);
+map.centerAndZoom(poi, 16);
+map.enableScrollWheelZoom();
+
+var content = '<p style="width:280px;margin:0;line-height:20px;">地址：北京市海淀区上地十街10号<br/>电话：(010)59928888</p>';
+var searchInfoWindow = new BMapLib.SearchInfoWindow(map, content, {
+    title: "百度大厦", //标题
+    width: 290, //宽度
+    height: 40, //高度
+    panel : "panel", //检索结果面板
+    enableAutoPan : true, //自动平移
+    enableSendToPhone: true, //是否显示发送到手机按钮
+    searchTypes :[
+        BMAPLIB_TAB_SEARCH,   //周边检索
+        BMAPLIB_TAB_TO_HERE,  //到这里去
+        BMAPLIB_TAB_FROM_HERE //从这里出发
+    ]
+});
+
+var marker = new BMap.Marker(poi);
+map.addOverlay(marker);
+searchInfoWindow.open(marker);
+marker.enableDragging();
+marker.addEventListener("click", function(e){
+	searchInfoWindow.open(marker);
+})
+$("close").onclick = function(){
+	searchInfoWindow.close();
+}
+$("open").onclick = function(){
+	searchInfoWindow.open(marker);
+}
+$("show").onclick = function(){
+	searchInfoWindow.show();
+}
+$("hide").onclick = function(){
+	searchInfoWindow.hide();
+}
+$("enableAutoPan").onclick = function(){
+	searchInfoWindow.enableAutoPan();
+}
+$("disableAutoPan").onclick = function(){
+	searchInfoWindow.disableAutoPan();
+}
+$("getPosition").onclick = function(){
+    var position = searchInfoWindow.getPosition();
+	alert("lng=" + position.lng + ";lat=" + position.lat);
+}
+$("setPosition").onclick = function(){
+    console.log(new BMap.Point($("lng").value, $("lat").value));
+	searchInfoWindow.setPosition(new BMap.Point($("lng").value, $("lat").value));
+}
+$("getOffset").onclick = function(){
+    var offset = searchInfoWindow.getOffset();
+	alert("width=" + offset.width + ";height=" + offset.height);
+}
+$("setContent").onclick = function(){
+    searchInfoWindow.setContent($("content").value);
+}
+$("getContent").onclick = function(){
+    alert(searchInfoWindow.getContent());
+}
+$("setTitle").onclick = function(){
+    searchInfoWindow.setTitle($("title").value);
+}
+$("getTitle").onclick = function(){
+    alert(searchInfoWindow.getTitle());
+}
+function $(id){
+	return document.getElementById(id);
+}
+
+//创建信息框1
+var searchInfoWindow1 = new BMapLib.SearchInfoWindow(map, "信息框1内容", {
+    title: "信息框1", //标题
+    panel : "panel", //检索结果面板
+    enableAutoPan : true, //自动平移
+    searchTypes :[
+        BMAPLIB_TAB_FROM_HERE, //从这里出发
+        BMAPLIB_TAB_SEARCH   //周边检索
+    ]
+});
+function openInfoWindow1() {
+    searchInfoWindow1.open(new BMap.Point(116.319852,40.057031));
+}
+
+//创建信息框2
+var searchInfoWindow2 = new BMapLib.SearchInfoWindow(map, "信息框2内容", {
+    title: "信息框2", //标题
+    panel : "panel", //检索结果面板
+    enableAutoPan : true, //自动平移
+    searchTypes :[
+        BMAPLIB_TAB_SEARCH   //周边检索
+    ]
+});
+function openInfoWindow2() {
+    searchInfoWindow2.open(new BMap.Point(116.324852,40.057031));
+}
+
+//创建信息框3
+var searchInfoWindow3 = new BMapLib.SearchInfoWindow(map, "信息框3内容", {
+    title: "信息框3", //标题
+    width: 290, //宽度
+    height: 40, //高度
+    panel : "panel", //检索结果面板
+    enableAutoPan : true, //自动平移
+    searchTypes :[
+    ]
+});
+function openInfoWindow3() {
+    searchInfoWindow3.open(new BMap.Point(116.328852,40.057031));
+}
+</script>
+</body>
+
+</html>
