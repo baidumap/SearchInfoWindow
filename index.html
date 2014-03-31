@@ -6,7 +6,6 @@
     <title>Searchinfowindow by baidumap</title>
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/respond.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -14,6 +13,9 @@
     <!--[if lt IE 8]>
     <link rel="stylesheet" href="stylesheets/ie.css">
     <![endif]-->
+    <script src="http://api.map.baidu.com/api?v=1.5"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
   </head>
@@ -38,41 +40,154 @@
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
         </div>
 
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+        <div style="overflow:hidden;zoom:1;"> 
+            <div id="map" style="width:700px; height: 400px;float:left;"></div>
+            <div id="panel" style="width:400px;height:400px; overflow:auto;float:left;"></div>
+        </div>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
-
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
-
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
-
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+        <button id="close">close</button>
+        <button id="open">open</button>
+        <button id="show">show</button>
+        <button id="hide">hide</button>
+        <button id="enableAutoPan">enableAutoPan</button>
+        <button id="disableAutoPan">disableAutoPan</button>
+        <br/>
+        <button id="getPosition">getPosition</button>
+        position: lng:<input type="text" id="lng" value="116.319852"/>
+        lat:<input type="text" id="lat" value="40.057031"/>
+        <button id="setPosition">setPosition</button>
+        <button id="getOffset">getOffset</button>
+        <br/>
+        content: <input type="text" id="content" value="新的内容"/>
+        <button id="setContent">setContent</button>
+        <button id="getContent">getContent</button>
+        title: <input type="text" id="title" value="新的标题"/>
+        <button id="setTitle">setTitle</button>
+        <button id="getTitle">getTitle</button>
+        <br/>
+        打开新的信息框
+        <input type="button" value="信息框1" onclick="openInfoWindow1()"/>
+        <input type="button" value="信息框2" onclick="openInfoWindow2()"/>
+        <input type="button" value="信息框3" onclick="openInfoWindow3()"/>
       </section>
 
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+<script type="text/javascript">
+var map = new BMap.Map('map');
+var poi = new BMap.Point(116.307852,40.057031);
+map.centerAndZoom(poi, 16);
+map.enableScrollWheelZoom();
+
+var content = '<p style="width:280px;margin:0;line-height:20px;">地址：北京市海淀区上地十街10号<br/>电话：(010)59928888</p>';
+var searchInfoWindow = new BMapLib.SearchInfoWindow(map, content, {
+    title: "百度大厦", //标题
+    width: 290, //宽度
+    height: 40, //高度
+    panel : "panel", //检索结果面板
+    enableAutoPan : true, //自动平移
+    enableSendToPhone: true, //是否显示发送到手机按钮
+    searchTypes :[
+        BMAPLIB_TAB_SEARCH,   //周边检索
+        BMAPLIB_TAB_TO_HERE,  //到这里去
+        BMAPLIB_TAB_FROM_HERE //从这里出发
+    ]
+});
+
+var marker = new BMap.Marker(poi);
+map.addOverlay(marker);
+searchInfoWindow.open(marker);
+marker.enableDragging();
+marker.addEventListener("click", function(e){
+  searchInfoWindow.open(marker);
+})
+$("close").onclick = function(){
+  searchInfoWindow.close();
+}
+$("open").onclick = function(){
+  searchInfoWindow.open(marker);
+}
+$("show").onclick = function(){
+  searchInfoWindow.show();
+}
+$("hide").onclick = function(){
+  searchInfoWindow.hide();
+}
+$("enableAutoPan").onclick = function(){
+  searchInfoWindow.enableAutoPan();
+}
+$("disableAutoPan").onclick = function(){
+  searchInfoWindow.disableAutoPan();
+}
+$("getPosition").onclick = function(){
+    var position = searchInfoWindow.getPosition();
+  alert("lng=" + position.lng + ";lat=" + position.lat);
+}
+$("setPosition").onclick = function(){
+    console.log(new BMap.Point($("lng").value, $("lat").value));
+  searchInfoWindow.setPosition(new BMap.Point($("lng").value, $("lat").value));
+}
+$("getOffset").onclick = function(){
+    var offset = searchInfoWindow.getOffset();
+  alert("width=" + offset.width + ";height=" + offset.height);
+}
+$("setContent").onclick = function(){
+    searchInfoWindow.setContent($("content").value);
+}
+$("getContent").onclick = function(){
+    alert(searchInfoWindow.getContent());
+}
+$("setTitle").onclick = function(){
+    searchInfoWindow.setTitle($("title").value);
+}
+$("getTitle").onclick = function(){
+    alert(searchInfoWindow.getTitle());
+}
+function $(id){
+  return document.getElementById(id);
+}
+
+//创建信息框1
+var searchInfoWindow1 = new BMapLib.SearchInfoWindow(map, "信息框1内容", {
+    title: "信息框1", //标题
+    panel : "panel", //检索结果面板
+    enableAutoPan : true, //自动平移
+    searchTypes :[
+        BMAPLIB_TAB_FROM_HERE, //从这里出发
+        BMAPLIB_TAB_SEARCH   //周边检索
+    ]
+});
+function openInfoWindow1() {
+    searchInfoWindow1.open(new BMap.Point(116.319852,40.057031));
+}
+
+//创建信息框2
+var searchInfoWindow2 = new BMapLib.SearchInfoWindow(map, "信息框2内容", {
+    title: "信息框2", //标题
+    panel : "panel", //检索结果面板
+    enableAutoPan : true, //自动平移
+    searchTypes :[
+        BMAPLIB_TAB_SEARCH   //周边检索
+    ]
+});
+function openInfoWindow2() {
+    searchInfoWindow2.open(new BMap.Point(116.324852,40.057031));
+}
+
+//创建信息框3
+var searchInfoWindow3 = new BMapLib.SearchInfoWindow(map, "信息框3内容", {
+    title: "信息框3", //标题
+    width: 290, //宽度
+    height: 40, //高度
+    panel : "panel", //检索结果面板
+    enableAutoPan : true, //自动平移
+    searchTypes :[
+    ]
+});
+function openInfoWindow3() {
+    searchInfoWindow3.open(new BMap.Point(116.328852,40.057031));
+}
+</script>
     
   </body>
 </html>
