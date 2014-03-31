@@ -13,9 +13,9 @@
     <!--[if lt IE 8]>
     <link rel="stylesheet" href="stylesheets/ie.css">
     <![endif]-->
-    <script src="http://api.map.baidu.com/api?v=1.5"></script>
-    <script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
-    <link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css" />
+    <script src="http://api.map.baidu.com/api?v=1.4"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.js"></script>
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.4/src/SearchInfoWindow_min.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
   </head>
@@ -40,7 +40,7 @@
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
         </div>
 
-        <div style="overflow:hidden;zoom:1;"> 
+         <div style="overflow:hidden;zoom:1;">  
             <div id="map" style="width:700px; height: 400px;float:left;"></div>
             <div id="panel" style="width:400px;height:400px; overflow:auto;float:left;"></div>
         </div>
@@ -73,7 +73,7 @@
 
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-<script type="text/javascript">
+ <script type="text/javascript">
 var map = new BMap.Map('map');
 var poi = new BMap.Point(116.307852,40.057031);
 map.centerAndZoom(poi, 16);
@@ -86,7 +86,6 @@ var searchInfoWindow = new BMapLib.SearchInfoWindow(map, content, {
     height: 40, //高度
     panel : "panel", //检索结果面板
     enableAutoPan : true, //自动平移
-    enableSendToPhone: true, //是否显示发送到手机按钮
     searchTypes :[
         BMAPLIB_TAB_SEARCH,   //周边检索
         BMAPLIB_TAB_TO_HERE,  //到这里去
